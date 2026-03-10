@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svādhyāya | Self-Study Mirror</title>
+    <style>
+        :root {
+            --primary: #1a2a6c;
+            --accent: #e67e22;
+            --bg: #f8f9fa;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            border-top: 5px solid var(--primary);
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        p.subtitle {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #eee;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        #status {
+            font-size: 0.85em;
+            color: var(--accent);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .result-box {
+            background: #fff9f4;
+            border: 1px solid #fdf2e9;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .label {
+            font-size: 0.8em;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .value {
+            font-size: 1.1em;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .footer-note {
+            font-size: 0.75em;
+            color: #bdc3c7;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Svādhyāya</h1>
+        <p class="subtitle">Self-Study Mirror</p>
+
+        <div id="status">Syncing with planetary cycles...</div>
+
+        <div class="result-box" id="result-ui" style="display:none;">
+            <span class="label">Mathematical Precision</span>
+            <span class="value" id="long-val">--</span>
+
+            <span class="label">Vedic Rashi (Sign)</span>
+            <span class="value" id="sign-val">--</span>
+
+            <span class="label">Nakshatra (Constellation)</span>
+            <span class="value" id="nak-val">--</span>
+        </div>
+
+        <div class="divider"></div>
+        <p class="footer-note">Powered by Swiss Ephemeris • Open Source • Privacy-First</p>
+    </div>
+
+    <script type="module">
+        // Using +esm to ensure compatibility with browser modules
+        import { SwissEphemeris } from 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.1.1/+esm';
+
+        const zodiacs = ["Aries (Mesha)", "Taurus (Vrishabha)", "Gemini (Mithuna)", "Cancer (Karka)", "Leo (Simha)", "Virgo (Kanya)", "Libra (Tula)", "Scorpio (Vrishchika)", "Sagittarius (Dhanu)", "Capricorn (Makara)", "Aquarius (Kumbha)", "Pisces (Meena)"];
+
+        const nakshatras = [
+            "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha",
+            "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+            "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+        ];
+
+        async function initMirror() {
+            try {
+                // Initialize the WASM Engine
+                const swe = new SwissEphemeris();
+                await swe.init();
+
+                // Get the current Julian Day
+                const now = new Date();
+                const jd = swe.dateToJulianDay(now);
+
+                // Calculate Moon (ID: 1)
+                const moon = swe.calculatePosition(jd, 1);
+
+                // Vedic Translations
+                const signIndex = Math.floor(moon.longitude / 30);
+                const nakIndex = Math.floor(moon.longitude / (360 / 27));
+
+                // Update UI
+                document.getElementById('status').innerText = "✓ Scientific Data Verified";
+                document.getElementById('status').style.color = "#27ae60";
+
+                document.getElementById('result-ui').style.display = "block";
+                document.getElementById('long-val').innerText = moon.longitude.toFixed(4) + "°";
+                document.getElementById('sign-val').innerText = zodiacs[signIndex];
+                document.getElementById('nak-val').innerText = nakshatras[nakIndex];
+
+            } catch (err) {
+                console.error("Mirror Error:", err);
+                document.getElementById('status').innerText = "❌ Engine Error. See Console.";
+                document.getElementById('status').style.color = "#c0392b";
+            }
+        }
+
+        initMirror();
+    </script>
+</body>
+
+</html>
