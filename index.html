@@ -1,169 +1,378 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Svādhyāya | Self-Study Mirror</title>
-    <style>
-        :root {
-            --primary: #1a2a6c;
-            --accent: #e67e22;
-            --bg: #f8f9fa;
-            --text: #2c3e50;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            max-width: 380px;
-            width: 90%;
-            text-align: center;
-            border-top: 5px solid var(--primary);
-        }
-
-        h1 {
-            margin: 0;
-            color: var(--primary);
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        p.subtitle {
-            font-size: 0.9em;
-            color: #7f8c8d;
-            margin-bottom: 25px;
-        }
-
-        .divider {
-            height: 1px;
-            background: #eee;
-            width: 100%;
-            margin: 20px 0;
-        }
-
-        #status {
-            font-size: 0.85em;
-            color: var(--accent);
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .result-box {
-            background: #fff9f4;
-            border: 1px solid #fdf2e9;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: left;
-            line-height: 1.6;
-        }
-
-        .label {
-            font-size: 0.8em;
-            color: #95a5a6;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .value {
-            font-size: 1.1em;
-            color: var(--primary);
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .footer-note {
-            font-size: 0.75em;
-            color: #bdc3c7;
-            margin-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Svādhyāya — Free, Private, Ad-Free Vedic Astrology, Panchang & Kundali. Your data never leaves your device."/>
+<meta name="theme-color" content="#070B14"/>
+<title>Svādhyāya · स्वाध्याय · Vedic Self-Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Sans+Devanagari:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/styles.css"/>
+<link rel="manifest" href="manifest.json"/>
 </head>
-
 <body>
 
-    <div class="card">
-        <h1>Svādhyāya</h1>
-        <p class="subtitle">Self-Study Mirror</p>
+<!-- ═══════════════════════════════════════════════════════
+     THEME TOGGLE (fixed top-right)
+═══════════════════════════════════════════════════════ -->
+<button class="theme-toggle" id="themeToggle" title="Toggle Day/Night">🌙</button>
+<button class="settings-toggle" id="settingsToggle" title="Settings">⚙️</button>
 
-        <div id="status">Syncing with planetary cycles...</div>
-
-        <div class="result-box" id="result-ui" style="display:none;">
-            <span class="label">Mathematical Precision</span>
-            <span class="value" id="long-val">--</span>
-
-            <span class="label">Vedic Rashi (Sign)</span>
-            <span class="value" id="sign-val">--</span>
-
-            <span class="label">Nakshatra (Constellation)</span>
-            <span class="value" id="nak-val">--</span>
+<!-- ═══════════════════════════════════════════════════════
+     SETTINGS PANEL
+═══════════════════════════════════════════════════════ -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <div class="settings-header">
+      <span>⚙️ Settings</span>
+      <button onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="setting-group">
+        <label class="setting-label">🌍 Language</label>
+        <div class="setting-options" id="langOpts">
+          <button class="sopt active" data-val="en" onclick="setLang('en')">English</button>
+          <button class="sopt" data-val="hi" onclick="setLang('hi')">हिंदी</button>
         </div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">🗺️ Chart Style</label>
+        <div class="setting-options" id="chartStyleOpts">
+          <button class="sopt active" data-val="north" onclick="setChartStyle('north')">North Indian</button>
+          <button class="sopt" data-val="south" onclick="setChartStyle('south')">South Indian</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">🌡️ Weather Unit</label>
+        <div class="setting-options" id="tempOpts">
+          <button class="sopt active" data-val="C" onclick="setTempUnit('C')">°C Celsius</button>
+          <button class="sopt" data-val="F" onclick="setTempUnit('F')">°F Fahrenheit</button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">🔔 Notifications</label>
+        <div class="setting-toggle-row">
+          <span>Festival Reminders</span>
+          <label class="toggle-switch"><input type="checkbox" id="notifFest" checked/><span class="tslider"></span></label>
+        </div>
+        <div class="setting-toggle-row">
+          <span>Daily Vibe Alert</span>
+          <label class="toggle-switch"><input type="checkbox" id="notifVibe"/><span class="tslider"></span></label>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">📱 Install App</label>
+        <button class="sopt install-btn" onclick="installPWA()">📲 Add to Home Screen</button>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">🗑️ Data</label>
+        <button class="sopt danger-opt" onclick="if(confirm('Clear all saved data?'))clearAllData()">Clear All Saved Data</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-        <div class="divider"></div>
-        <p class="footer-note">Powered by Swiss Ephemeris • Open Source • Privacy-First</p>
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 1: LANDING / BIRTH INPUT
+═══════════════════════════════════════════════════════ -->
+<section id="sec-landing" class="app-sec active">
+  <div class="landing-bg">
+    <div class="stars-wrap" id="starsWrap"></div>
+    <div class="mandala-bg">ॐ</div>
+  </div>
+  <div class="landing-wrap">
+    <header class="land-header">
+      <div class="land-logo">
+        <span class="land-om" id="landOm">ॐ</span>
+        <div>
+          <h1 class="land-title">Svādhyāya</h1>
+          <div class="land-deva">स्वाध्याय · Self-Study · Self-Awareness</div>
+        </div>
+      </div>
+      <p class="land-tag">Free · Private · Ad-Free · No Server · 100% In Your Browser</p>
+      <div class="land-badges">
+        <span class="lbadge">🔒 Zero Data Leak</span>
+        <span class="lbadge">🔭 NASA-grade Math</span>
+        <span class="lbadge">📡 Offline Ready</span>
+        <span class="lbadge">🆓 Free Forever</span>
+        <span class="lbadge">🪔 Vedic Tradition</span>
+      </div>
+    </header>
+
+    <!-- Philosophy Cards -->
+    <div class="phil-strip" id="philStrip"></div>
+
+    <!-- Birth Form -->
+    <div class="form-card">
+      <h2 class="form-h">Enter Your Birth Details</h2>
+      <p class="form-sub">Saved only in your browser. Nothing is ever sent to a server.</p>
+      <form id="birthForm" novalidate>
+        <div class="fgrid">
+          <div class="fg full"><label>Your Name (optional)</label><input id="fName" type="text" placeholder="e.g. Priya Sharma" autocomplete="name"/></div>
+          <div class="fg"><label>Day *</label><input id="fDay" type="number" min="1" max="31" placeholder="DD" required/></div>
+          <div class="fg"><label>Month *</label><input id="fMonth" type="number" min="1" max="12" placeholder="MM" required/></div>
+          <div class="fg"><label>Year *</label><input id="fYear" type="number" min="1900" max="2100" placeholder="YYYY" required/></div>
+          <div class="fg"><label>Hour (24h) *</label><input id="fHour" type="number" min="0" max="23" placeholder="HH" required/></div>
+          <div class="fg"><label>Minute *</label><input id="fMin" type="number" min="0" max="59" placeholder="MM" required/></div>
+          <div class="fg"><label>UTC Offset *</label><input id="fUTC" type="number" step="0.5" placeholder="+5.5" value="5.5" required/></div>
+          <div class="fg full city-fg">
+            <label>City of Birth</label>
+            <div class="city-row">
+              <input id="fPlace" type="text" placeholder="e.g. Mumbai, India"/>
+              <button type="button" class="city-btn" onclick="lookupCity()">📍 Auto Coordinates</button>
+            </div>
+          </div>
+          <div class="fg"><label>Latitude *</label><input id="fLat" type="number" step="0.0001" placeholder="19.0760" required/></div>
+          <div class="fg"><label>Longitude *</label><input id="fLon" type="number" step="0.0001" placeholder="72.8777" required/></div>
+        </div>
+        <div class="presets-row">
+          <span class="pl">Quick:</span>
+          <button type="button" onclick="preset(19.076,72.877,5.5,'Mumbai')">Mumbai</button>
+          <button type="button" onclick="preset(28.614,77.209,5.5,'Delhi')">Delhi</button>
+          <button type="button" onclick="preset(13.083,80.271,5.5,'Chennai')">Chennai</button>
+          <button type="button" onclick="preset(22.573,88.364,5.5,'Kolkata')">Kolkata</button>
+          <button type="button" onclick="preset(12.972,77.595,5.5,'Bangalore')">Bangalore</button>
+          <button type="button" onclick="preset(17.385,78.487,5.5,'Hyderabad')">Hyderabad</button>
+          <button type="button" onclick="preset(23.023,72.571,5.5,'Ahmedabad')">Ahmedabad</button>
+          <button type="button" onclick="preset(18.520,73.856,5.5,'Pune')">Pune</button>
+          <button type="button" onclick="preset(26.912,75.787,5.5,'Jaipur')">Jaipur</button>
+          <button type="button" onclick="preset(28.671,77.227,5.5,'Noida')">Noida</button>
+          <button type="button" onclick="preset(51.507,-0.128,1,'London')">London</button>
+          <button type="button" onclick="preset(40.713,-74.006,-5,'New York')">New York</button>
+          <button type="button" onclick="preset(1.352,103.820,8,'Singapore')">Singapore</button>
+          <button type="button" onclick="preset(25.204,55.270,4,'Dubai')">Dubai</button>
+        </div>
+        <button type="submit" class="gen-btn"><span>ॐ</span> Generate My Kundali &amp; Panchang</button>
+      </form>
     </div>
 
-    <script type="module">
-        // Using +esm to ensure compatibility with browser modules
-        import { SwissEphemeris } from 'https://cdn.jsdelivr.net/npm/@swisseph/browser@1.1.1/+esm';
+    <!-- Kundali Matching Entry -->
+    <div class="match-teaser" onclick="showSection('sec-match')">
+      <span>💑</span>
+      <div><strong>Kundali Milan (Compatibility)</strong><br><small>Check compatibility between two charts</small></div>
+      <span class="arrow">→</span>
+    </div>
+  </div>
+</section>
 
-        const zodiacs = ["Aries (Mesha)", "Taurus (Vrishabha)", "Gemini (Mithuna)", "Cancer (Karka)", "Leo (Simha)", "Virgo (Kanya)", "Libra (Tula)", "Scorpio (Vrishchika)", "Sagittarius (Dhanu)", "Capricorn (Makara)", "Aquarius (Kumbha)", "Pisces (Meena)"];
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 2: MAIN APP
+═══════════════════════════════════════════════════════ -->
+<section id="sec-main" class="app-sec">
 
-        const nakshatras = [
-            "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha",
-            "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
-            "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
-        ];
+  <!-- Header -->
+  <header class="app-head">
+    <div class="ah-left">
+      <button class="back-btn" onclick="showSection('sec-landing')">← Edit</button>
+      <div class="ah-logo" onclick="showSection('sec-landing')">
+        <span class="ah-om">ॐ</span>
+        <span class="ah-name">Svādhyāya</span>
+      </div>
+      <div class="ah-profile">
+        <span id="hdrName" class="hdr-name"></span>
+        <span id="hdrDate" class="hdr-date"></span>
+      </div>
+    </div>
+    <div class="ah-right">
+      <div class="day-night-indicator" id="dayNightBadge"></div>
+      <div class="weather-widget" id="weatherWidget"></div>
+    </div>
+  </header>
 
-        async function initMirror() {
-            try {
-                // Initialize the WASM Engine
-                const swe = new SwissEphemeris();
-                await swe.init();
+  <!-- Main Navigation Tabs -->
+  <nav class="main-nav" id="mainNav">
+    <button class="mnb active" id="mn-chart" onclick="switchTab('chart')"><span>⊕</span><span class="mnl">Birth Chart</span></button>
+    <button class="mnb" id="mn-panchang" onclick="switchTab('panchang')"><span>📅</span><span class="mnl">Panchang</span></button>
+    <button class="mnb" id="mn-vibe" onclick="switchTab('vibe')"><span>🌙</span><span class="mnl">Today's Vibe</span></button>
+    <button class="mnb" id="mn-dasha" onclick="switchTab('dasha')"><span>⏳</span><span class="mnl">Dasha</span></button>
+    <button class="mnb" id="mn-transits" onclick="switchTab('transits')"><span>🔭</span><span class="mnl">Transits</span></button>
+    <button class="mnb" id="mn-calendar" onclick="switchTab('calendar')"><span>🗓️</span><span class="mnl">Calendar</span></button>
+    <button class="mnb" id="mn-muhurat" onclick="switchTab('muhurat')"><span>✨</span><span class="mnl">Muhurat</span></button>
+    <button class="mnb" id="mn-evidence" onclick="switchTab('evidence')"><span>🔎</span><span class="mnl">Evidence</span></button>
+    <button class="mnb" id="mn-numerology" onclick="switchTab('numerology')"><span>🔢</span><span class="mnl">Numerology</span></button>
+    <button class="mnb" id="mn-remedies" onclick="switchTab('remedies')"><span>💎</span><span class="mnl">Remedies</span></button>
+    <button class="mnb" id="mn-gita" onclick="switchTab('gita')"><span>📖</span><span class="mnl">Gita</span></button>
+  </nav>
 
-                // Get the current Julian Day
-                const now = new Date();
-                const jd = swe.dateToJulianDay(now);
+  <!-- ── TAB: BIRTH CHART ── -->
+  <div class="tab-panel active" id="tp-chart">
+    <div class="chart-toolbar">
+      <div class="chart-style-sw" id="chartStyleSw">
+        <button class="csb active" id="cs-north" onclick="setChartStyle('north')">North Indian</button>
+        <button class="csb" id="cs-south" onclick="setChartStyle('south')">South Indian</button>
+      </div>
+      <div class="ayan-badge">Lahiri Ayanamsa · Sidereal</div>
+      <button class="share-btn" onclick="shareChart()">📤 Share</button>
+    </div>
+    <div class="chart-main">
+      <div class="chart-col-left">
+        <div id="chartSVG" class="chart-svg-box"></div>
+        <div id="yogaPanel" class="yoga-panel"></div>
+      </div>
+      <div class="chart-col-right">
+        <div id="planetTable" class="planet-tbl-wrap"></div>
+      </div>
+    </div>
+    <div class="chart-note">Click <strong>?</strong> next to any planet to see its interpretation + the exact astronomical math.</div>
+  </div>
 
-                // Calculate Moon (ID: 1)
-                const moon = swe.calculatePosition(jd, 1);
+  <!-- ── TAB: PANCHANG ── -->
+  <div class="tab-panel" id="tp-panchang">
+    <div class="panel-wrap">
+      <div class="panchang-date-bar">
+        <button onclick="changePanchangDate(-1)">‹</button>
+        <span id="panchangDateLabel"></span>
+        <button onclick="changePanchangDate(1)">›</button>
+        <button onclick="setPanchangToday()">Today</button>
+      </div>
+      <div id="panchangGrid" class="panchang-grid"></div>
+      <div class="panchang-two-col">
+        <div>
+          <h3 class="section-h3">🌅 Sunrise &amp; Timings</h3>
+          <div id="panchangTimings" class="timings-grid"></div>
+        </div>
+        <div>
+          <h3 class="section-h3">⚠️ Inauspicious Periods</h3>
+          <div id="panchangInauspicious" class="inauspicious-grid"></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="section-h3">☀️ Choghadiya (Day)</h3>
+        <div id="choghadiyaDay" class="chog-grid"></div>
+      </div>
+      <div>
+        <h3 class="section-h3">🌙 Hora of the Day</h3>
+        <div id="horaDay" class="hora-grid"></div>
+      </div>
+    </div>
+  </div>
 
-                // Vedic Translations
-                const signIndex = Math.floor(moon.longitude / 30);
-                const nakIndex = Math.floor(moon.longitude / (360 / 27));
+  <!-- ── TAB: TODAY'S VIBE ── -->
+  <div class="tab-panel" id="tp-vibe">
+    <div class="panel-wrap">
+      <div id="vibeMain"></div>
+      <div id="sadeSatiPanel"></div>
+      <div id="rashifalPanel"></div>
+      <div id="luckyPanel"></div>
+      <div id="transitInsightsPanel"></div>
+    </div>
+  </div>
 
-                // Update UI
-                document.getElementById('status').innerText = "✓ Scientific Data Verified";
-                document.getElementById('status').style.color = "#27ae60";
+  <!-- ── TAB: DASHA ── -->
+  <div class="tab-panel" id="tp-dasha">
+    <div class="panel-wrap">
+      <h3 class="section-h3">⏳ Vimshottari Dasha — Life Chapters</h3>
+      <p class="section-sub">120-year planetary cycle calculated from your Moon's Nakshatra at birth. Each chapter carries its own themes and growth opportunities.</p>
+      <div id="dashaTimeline" class="dasha-timeline"></div>
+      <div id="dashaCards" class="dasha-cards"></div>
+    </div>
+  </div>
 
-                document.getElementById('result-ui').style.display = "block";
-                document.getElementById('long-val').innerText = moon.longitude.toFixed(4) + "°";
-                document.getElementById('sign-val').innerText = zodiacs[signIndex];
-                document.getElementById('nak-val').innerText = nakshatras[nakIndex];
+  <!-- ── TAB: TRANSITS ── -->
+  <div class="tab-panel" id="tp-transits">
+    <div class="panel-wrap">
+      <h3 class="section-h3">🔭 Current Planetary Positions</h3>
+      <p class="section-sub">Real-time sidereal positions of all planets right now (Lahiri Ayanamsa).</p>
+      <div id="transitTable" class="transit-tbl-wrap"></div>
+      <h3 class="section-h3" style="margin-top:24px">🌍 Transit Impact on Your Chart</h3>
+      <div id="transitImpact" class="transit-impact"></div>
+    </div>
+  </div>
 
-            } catch (err) {
-                console.error("Mirror Error:", err);
-                document.getElementById('status').innerText = "❌ Engine Error. See Console.";
-                document.getElementById('status').style.color = "#c0392b";
-            }
-        }
+  <!-- ── TAB: CALENDAR ── -->
+  <div class="tab-panel" id="tp-calendar">
+    <div class="panel-wrap">
+      <div class="cal-nav">
+        <button onclick="changeCalMonth(-1)">‹</button>
+        <span id="calMonthLabel"></span>
+        <button onclick="changeCalMonth(1)">›</button>
+      </div>
+      <div id="calGrid" class="cal-grid"></div>
+      <div id="calFestList" class="cal-fest-list"></div>
+    </div>
+  </div>
 
-        initMirror();
-    </script>
+  <!-- ── TAB: MUHURAT ── -->
+  <div class="tab-panel" id="tp-muhurat">
+    <div class="panel-wrap">
+      <h3 class="section-h3">✨ Auspicious Muhurats Today</h3>
+      <div id="muhuratGrid" class="muhurat-grid"></div>
+      <h3 class="section-h3" style="margin-top:24px">🕉️ Muhurat by Activity</h3>
+      <div id="muhuratActivity" class="muhurat-activity"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB: EVIDENCE VAULT ── -->
+  <div class="tab-panel" id="tp-evidence">
+    <div class="panel-wrap">
+      <h3 class="section-h3">🔎 Evidence Vault — Prove It to Yourself</h3>
+      <p class="section-sub">Below are major planetary transits from recent years. These are mathematical facts — real planetary positions on real dates. Did they match your life experience?</p>
+      <div id="evidenceList" class="evidence-list"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB: NUMEROLOGY ── -->
+  <div class="tab-panel" id="tp-numerology">
+    <div class="panel-wrap">
+      <div id="numerologyPanel"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB: REMEDIES ── -->
+  <div class="tab-panel" id="tp-remedies">
+    <div class="panel-wrap">
+      <h3 class="section-h3">💎 Strategy &amp; Remedies</h3>
+      <p class="section-sub">These are not "fixes for problems" — they are strategies for working consciously with your planetary energies.</p>
+      <div id="remediesPanel" class="remedies-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB: GITA ── -->
+  <div class="tab-panel" id="tp-gita">
+    <div class="panel-wrap">
+      <h3 class="section-h3">📖 Bhagavad Gita — Daily Wisdom</h3>
+      <div id="gitaPanel" class="gita-panel"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 3: KUNDALI MILAN
+═══════════════════════════════════════════════════════ -->
+<section id="sec-match" class="app-sec">
+  <div class="panel-wrap">
+    <button class="back-btn" onclick="showSection('sec-landing')" style="margin-bottom:20px">← Back</button>
+    <h2 class="section-h2">💑 Kundali Milan — Compatibility</h2>
+    <p class="section-sub">Ashta Koota (8-point) matching based on Moon Nakshatra. Enter both birth details below.</p>
+    <div class="match-form-grid">
+      <div class="match-person">
+        <h3>🧑 Person 1</h3>
+        <div class="fg"><label>Day</label><input id="m1d" type="number" min="1" max="31" placeholder="DD"/></div>
+        <div class="fg"><label>Month</label><input id="m1m" type="number" min="1" max="12" placeholder="MM"/></div>
+        <div class="fg"><label>Year</label><input id="m1y" type="number" placeholder="YYYY"/></div>
+        <div class="fg"><label>Hour</label><input id="m1h" type="number" min="0" max="23" placeholder="HH"/></div>
+        <div class="fg"><label>UTC Offset</label><input id="m1u" type="number" step="0.5" value="5.5"/></div>
+      </div>
+      <div class="match-person">
+        <h3>👩 Person 2</h3>
+        <div class="fg"><label>Day</label><input id="m2d" type="number" min="1" max="31" placeholder="DD"/></div>
+        <div class="fg"><label>Month</label><input id="m2m" type="number" min="1" max="12" placeholder="MM"/></div>
+        <div class="fg"><label>Year</label><input id="m2y" type="number" placeholder="YYYY"/></div>
+        <div class="fg"><label>Hour</label><input id="m2h" type="number" min="0" max="23" placeholder="HH"/></div>
+        <div class="fg"><label>UTC Offset</label><input id="m2u" type="number" step="0.5" value="5.5"/></div>
+      </div>
+    </div>
+    <button class="gen-btn" onclick="runKundaliMilan()">🔮 Calculate Compatibility</button>
+    <div id="milanResult" class="milan-result"></div>
+  </div>
+</section>
+
+<!-- Scripts -->
+<script src="js/engine.js"></script>
+<script src="js/chart.js"></script>
+<script src="js/interp.js"></script>
+<script src="js/app.js"></script>
 </body>
-
 </html>

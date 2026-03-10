@@ -1,0 +1,15 @@
+{
+  "name": "Svādhyāya — Vedic Astrology & Panchang",
+  "short_name": "Svādhyāya",
+  "description": "Free, private, ad-free Vedic astrology. Birth chart, Panchang, Muhurat, Dasha. Your data never leaves your device.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070B14",
+  "theme_color": "#0F172A",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "categories": ["lifestyle", "education", "spirituality"],
+  "lang": "en-IN"
+}
